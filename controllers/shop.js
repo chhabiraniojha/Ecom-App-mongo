@@ -1,5 +1,7 @@
+const getDb=require("../util/database").getDb;
+const {ObjectId}=require("mongodb")
 const Product = require('../models/product');
-
+const User = require("../models/user");
 
 exports.getProducts = (req, res, next) => {
     Product.fetchAll()
@@ -48,9 +50,9 @@ exports.getProductDetails = (req, res, next) => {
 exports.postCart = async (req, res, next) => {
   const productId=req.body.productId;
   const prod=await Product.fetchProductById(productId)
-  console.log(prod)
+  // console.log(prod)
   const addingToCart=await req.user.addToCart(prod._id)
-  return res.status(200).json("success")
+  res.redirect('/cart')
 };
 
 // exports.getCart = (req, res, next) => {
@@ -59,6 +61,46 @@ exports.postCart = async (req, res, next) => {
 //     pageTitle: 'Your Cart'
 //   });
 // };
+
+
+exports.getCart = async (req, res, next) => {
+    try {
+        const user = await User.findUserById(req.user._id);
+        const cartItems = await Promise.all(
+            user.cart.items.map(async (cartItem) => {
+                const product = await Product.fetchProductById(cartItem.productId);
+                return { product, qty: cartItem.qty };
+            })
+        );
+        // console.log(cartItems)
+        res.render('shop/cart', { 
+          pageTitle: 'Your Cart', // ✅ Add this
+          path: '/cart',
+          cart: { items: cartItems } // ✅ Ensure cart data is passed
+      });
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+exports.postDeleteCartItem = async (req, res, next) => {
+  const productId = req.body.productId;
+  console.log("deleted")
+  try {
+      const user = await User.findUserById(req.user._id);
+      const updatedCartItems = user.cart.items.filter(item => item.productId.toString() !== productId);
+      
+      await getDb().collection("users").updateOne(
+          { _id: new ObjectId(req.user._id) },
+          { $set: { cart: { items: updatedCartItems } } }
+      );
+
+      res.redirect("/cart");
+  } catch (error) {
+      console.error(error);
+      res.redirect("/cart");
+  }
+};
 
 // exports.getOrders = (req, res, next) => {
 //   res.render('shop/orders', {

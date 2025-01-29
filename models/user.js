@@ -25,19 +25,23 @@ class User {
   async addToCart(productId) {
     const db = getDb()
 
-    let updatedCartItems = this.cart.items;
+    let updatedCartItems = this.cart.items?this.cart.items:[];
     console.log(updatedCartItems)
     console.log(productId)
-    const existingProductIndex = updatedCartItems.findIndex(
-      item => item.productId.toString() === productId.toString()
-    );
-    if (existingProductIndex !== -1) {
-      updatedCartItems[existingProductIndex].qty += 1;
-    } else {
+    if(updatedCartItems.length!==0){
+      const existingProductIndex = updatedCartItems.findIndex(
+        item => item.productId.toString() === productId.toString()
+      );
+      if (existingProductIndex !== -1) {
+        updatedCartItems[existingProductIndex].qty += 1;
+      }
+    }else {
+      console.log("k")
       updatedCartItems.push({ productId: new ObjectId(productId), qty: 1 });
     }
 
     const updatedCart = { items: updatedCartItems };
+    console.log(updatedCart)
 
     const updateCart=await db.collection("users").updateOne(
       {_id:new ObjectId(this._id)},

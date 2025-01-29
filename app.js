@@ -22,7 +22,7 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(async(req,res,next)=>{
-   const user=await User.findUserById("679a432de28b2233e0cc68e6");
+   const user=await User.findUserById("679a5b08e28b2233e0cc68ef");
    req.user=new User(user._id,user.name,user.email,user.cart);
    next();
 })
