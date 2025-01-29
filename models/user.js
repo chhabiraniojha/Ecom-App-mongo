@@ -1,36 +1,63 @@
-const {ObjectId}=require("mongodb")
-const getDb=require("../util/database").getDb;
+const { ObjectId } = require("mongodb")
+const getDb = require("../util/database").getDb;
 
-class User{
-   constructor(name,email){
-     this.name=name;
-     this.email=email;
-   }
+class User {
+  constructor(id, name, email, cart) {
+    this._id = id;
+    this.name = name;
+    this.email = email;
+    this.cart = cart;
 
-   save(){
-    const db=getDb();
+  }
+
+  save() {
+    const db = getDb();
     return db.collection('users')
-    .insertOne(this)
-    .then(res=>{
-      console.log(res)
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-   }
+      .insertOne(this)
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  async addToCart(productId) {
+    const db = getDb()
+
+    let updatedCartItems = this.cart.items;
+    console.log(updatedCartItems)
+    console.log(productId)
+    const existingProductIndex = updatedCartItems.findIndex(
+      item => item.productId.toString() === productId.toString()
+    );
+    if (existingProductIndex !== -1) {
+      updatedCartItems[existingProductIndex].qty += 1;
+    } else {
+      updatedCartItems.push({ productId: new ObjectId(productId), qty: 1 });
+    }
+
+    const updatedCart = { items: updatedCartItems };
+
+    const updateCart=await db.collection("users").updateOne(
+      {_id:new ObjectId(this._id)},
+      {$set:{cart:updatedCart}}
+    )
+    
+  }
 
   //  static fetchAll=async ()=>{
   //   const db=getDb();
   //   const products= await db.collection('products').find().toArray()
   //   return products
   //  }
-   
-   static findUserById=async (userId)=>{
+
+  static findUserById = async (userId) => {
     // console.log(userId)
-    const db=getDb();
-    const user= await db.collection('users').find({_id:new ObjectId(userId)}).next()
+    const db = getDb();
+    const user = await db.collection('users').find({ _id: new ObjectId(userId) }).next()
     return user
-   }
+  }
 
   //  static updateProduct = async (id, updatedData) => {
   //   const db = getDb();
@@ -51,7 +78,7 @@ class User{
 }
 
 
-module.exports=User;
+module.exports = User;
 
 
 

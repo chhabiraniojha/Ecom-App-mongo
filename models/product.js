@@ -32,6 +32,7 @@ class Product{
     console.log(productId)
     const db=getDb();
     const product= await db.collection('products').find({_id:new ObjectId(productId)}).next()
+    console.log(product)
     return product
    }
 

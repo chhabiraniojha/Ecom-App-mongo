@@ -45,14 +45,13 @@ exports.getProductDetails = (req, res, next) => {
   
 // };
 
-// exports.postCart = (req, res, next) => {
-//   const productId=req.body.productId;
-//   Product.findById(productId,(product) => {
-//     Cart.addProduct(productId,product.price)
-//     res.redirect("/cart")
-//       // Cart.addProduct(productId,)
-//   })
-// };
+exports.postCart = async (req, res, next) => {
+  const productId=req.body.productId;
+  const prod=await Product.fetchProductById(productId)
+  console.log(prod)
+  const addingToCart=await req.user.addToCart(prod._id)
+  return res.status(200).json("success")
+};
 
 // exports.getCart = (req, res, next) => {
 //   res.render('shop/cart', {
