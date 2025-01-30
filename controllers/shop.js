@@ -102,16 +102,40 @@ exports.postDeleteCartItem = async (req, res, next) => {
   }
 };
 
-// exports.getOrders = (req, res, next) => {
-//   res.render('shop/orders', {
-//     path: '/orders',
-//     pageTitle: 'Your Orders'
-//   });
-// };
+exports.getOrders = async (req, res) => {
+  try {
+    const db = getDb();
+    const userId = req.user._id; // Assuming user info is stored in req.user
 
-// exports.getCheckout = (req, res, next) => {
-//   res.render('shop/checkout', {
-//     path: '/checkout',
-//     pageTitle: 'Checkout'
-//   });
-// };
+    // Fetch orders for the logged-in user
+    const orders = await db.collection("orders").find({ userId: new ObjectId(userId) }).toArray();
+
+    res.render("shop/orders", {
+      pageTitle: "Your Orders",
+      path: "/orders",
+      orders: orders
+    });
+
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.getCheckout = async (req, res) => {
+  try {
+    const user = await User.findUserById(req.user._id);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const userInstance = new User(user._id, user.name, user.email, user.cart);
+    await userInstance.addOrder();
+
+    res.redirect("/orders");
+  } catch (error) {
+    console.error("Error during checkout:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};

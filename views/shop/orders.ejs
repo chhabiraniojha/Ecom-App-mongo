@@ -1,9 +1,51 @@
 <%- include('../includes/head.ejs') %>
-    </head>
+<title>Your Orders</title>
+</head>
 
-    <body>
-        <%- include('../includes/navigation.ejs') %>
-        <main>
-            <h1>Nothing there!</h1>
-        </main>
-        <%- include('../includes/end.ejs') %>
+<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+
+    <%- include('../includes/navigation.ejs') %>
+
+    <main style="width: 80%; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h2 style="text-align: center; color: #333;">Your Orders</h2>
+
+        <% if (orders && orders.length > 0) { %>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background: #007bff; color: white;">
+                        <th style="padding: 10px;">Order ID</th>
+                        <th style="padding: 10px;">Product</th>
+                        <th style="padding: 10px;">Image</th>
+                        <th style="padding: 10px;">Quantity</th>
+                        <th style="padding: 10px;">Total Price</th>
+                        <th style="padding: 10px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <% order.items.forEach(item => { %>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="text-align: center; padding: 10px;"><%= order._id %></td>
+                                <td style="text-align: center; padding: 10px;"><%= item.product.title %></td>
+                                <td style="text-align: center; padding: 10px;">
+                                    <img src="<%= item.product.imageUrl %>" alt="<%= item.product.title %>" style="width: 80px; height: 80px; border-radius: 5px;">
+                                </td>
+                                <td style="text-align: center; padding: 10px;"><%= item.qty %></td>
+                                <td style="text-align: center; padding: 10px;">₹<%= (item.product.price * item.qty).toFixed(2) %></td>
+                                <td style="text-align: center; padding: 10px; color: <%= order.status === 'Delivered' ? 'green' : 'red' %>;">
+                                    <%= order.status %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% }); %>
+                </tbody>
+            </table>
+
+        <% } else { %>
+            <p style="text-align: center; font-size: 18px; color: #777;">You have no orders yet. <a href="/products" style="color: #007bff; text-decoration: none;">Shop now</a></p>
+        <% } %>
+
+    </main>
+
+    <%- include('../includes/end.ejs') %>
+</body>
