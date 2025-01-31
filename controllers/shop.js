@@ -87,10 +87,10 @@ exports.postDeleteCartItem = async (req, res, next) => {
   const productId = req.body.productId;
   console.log("deleted")
   try {
-      const user = await User.findUserById(req.user._id);
+      const user = await User.findById(req.user._id);
       const updatedCartItems = user.cart.items.filter(item => item.productId.toString() !== productId);
       
-      await getDb().collection("users").updateOne(
+      await User.updateOne(
           { _id: new ObjectId(req.user._id) },
           { $set: { cart: { items: updatedCartItems } } }
       );
