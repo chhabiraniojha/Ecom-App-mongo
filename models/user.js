@@ -112,44 +112,44 @@ module.exports = mongoose.model("User", userSchema);
 //   }
   
 //   async addOrder() {
-//     const db = getDb();
+  //   const db = getDb();
 
-//     // Fetch the user's cart
-//     const user = await db.collection("users").findOne({ _id: new ObjectId(this._id) });
+  //   // Fetch the user's cart
+  //   const user = await db.collection("users").findOne({ _id: new ObjectId(this._id) });
 
-//     if (!user || !user.cart || user.cart.items.length === 0) {
-//       throw new Error("Cart is empty");
-//     }
+  //   if (!user || !user.cart || user.cart.items.length === 0) {
+  //     throw new Error("Cart is empty");
+  //   }
 
-//     // Get product details for each item in the cart
-//     const productIds = user.cart.items.map((item) => item.productId);
-//     const products = await db.collection("products").find({ _id: { $in: productIds } }).toArray();
+  //   // Get product details for each item in the cart
+  //   const productIds = user.cart.items.map((item) => item.productId);
+  //   const products = await db.collection("products").find({ _id: { $in: productIds } }).toArray();
 
-//     const orderItems = user.cart.items.map((item) => {
-//       const product = products.find((p) => p._id.toString() === item.productId.toString());
-//       return { product, qty: item.qty };
-//     });
+  //   const orderItems = user.cart.items.map((item) => {
+  //     const product = products.find((p) => p._id.toString() === item.productId.toString());
+  //     return { product, qty: item.qty };
+  //   });
 
-//     const order = {
-//       userId: new ObjectId(this._id),
-//       items: orderItems,
-//       totalAmount: orderItems.reduce((total, item) => total + item.qty * item.product.price, 0),
-//       createdAt: new Date(),
-//     };
+  //   const order = {
+  //     userId: new ObjectId(this._id),
+  //     items: orderItems,
+  //     totalAmount: orderItems.reduce((total, item) => total + item.qty * item.product.price, 0),
+  //     createdAt: new Date(),
+  //   };
 
-//     // Insert the order
-//     await db.collection("orders").insertOne(order);
+  //   // Insert the order
+  //   await db.collection("orders").insertOne(order);
 
-//     // Clear the user's cart after order creation
-//     await db.collection("users").updateOne(
-//       { _id: new ObjectId(this._id) },
-//       { $set: { cart: { items: [] } } }
-//     );
-//   }
-//   //  static fetchAll=async ()=>{
-//   //   const db=getDb();
-//   //   const products= await db.collection('products').find().toArray()
-//   //   return products
+  //   // Clear the user's cart after order creation
+  //   await db.collection("users").updateOne(
+  //     { _id: new ObjectId(this._id) },
+  //     { $set: { cart: { items: [] } } }
+  //   );
+  // }
+  // //  static fetchAll=async ()=>{
+  // //   const db=getDb();
+  // //   const products= await db.collection('products').find().toArray()
+  // //   return products
 //   //  }
 
 //   static findUserById = async (userId) => {
