@@ -49,7 +49,7 @@ exports.getProductDetails = (req, res, next) => {
 
 exports.postCart = async (req, res, next) => {
   const productId=req.body.productId;
-  const prod=await Product.fetchProductById(productId)
+  const prod=await Product.findById(productId)
   // console.log(prod)
   const addingToCart=await req.user.addToCart(prod._id)
   res.redirect('/cart')
@@ -65,10 +65,10 @@ exports.postCart = async (req, res, next) => {
 
 exports.getCart = async (req, res, next) => {
     try {
-        const user = await User.findUserById(req.user._id);
+        const user = await User.findById(req.user._id);
         const cartItems = await Promise.all(
             user.cart.items.map(async (cartItem) => {
-                const product = await Product.fetchProductById(cartItem.productId);
+                const product = await Product.findById(cartItem.productId);
                 return { product, qty: cartItem.qty };
             })
         );
