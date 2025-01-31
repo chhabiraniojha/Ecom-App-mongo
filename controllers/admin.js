@@ -11,11 +11,12 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
+  console.log("hi")
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product =new Product(title,price,imageUrl,description,req.user._id);
+  const product =new Product({title,price,imageUrl,description});
   product.save()
   .then(result=>{
     console.log(result)
@@ -26,7 +27,7 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
   .then((products)=>{
     // console.log(rows)
     res.render('admin/products', {
@@ -42,7 +43,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId=req.params.productId;
-  Product.deleteById(productId)
+  Product.findByIdAndDelete(productId)
   .then(
     res.redirect("/admin/products")
   ).catch(err=>console.log(err))
@@ -56,7 +57,7 @@ exports.getEditProduct = async (req, res, next) => {
     const prodId = req.params.productId;
 
     try {
-        const product = await Product.fetchProductById(prodId);
+        const product = await Product.findById(prodId);
 
         if (!product) {
             return res.redirect('/admin/products');
@@ -90,7 +91,7 @@ exports.postEditProduct = (req, res, next) => {
   };
 
   // Call the updateProduct method to update the product in the database
-  Product.updateProduct(prodId, updatedProduct)
+  Product.findByIdAndUpdate(prodId, updatedProduct)
     .then((result) => {
       console.log('Product updated:', result);
       res.redirect('/admin/products'); // Redirect to the product list page
@@ -101,17 +102,17 @@ exports.postEditProduct = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const productId = req.params.productId; // Extract product ID from the URL
+// exports.postDeleteProduct = (req, res, next) => {
+//   const productId = req.params.productId; // Extract product ID from the URL
 
-  // Call the static method `deleteById` from the Product model to delete the product
-  Product.deleteById(productId)
-    .then(() => {
-      console.log(`Product with ID: ${productId} deleted successfully`);
-      res.redirect('/admin/products'); // Redirect back to the products list page after deletion
-    })
-    .catch((err) => {
-      console.log(err);
-      res.redirect('/admin/products'); // Redirect back to the products list page if an error occurs
-    });
-};
+//   // Call the static method `deleteById` from the Product model to delete the product
+//   Product.deleteById(productId)
+//     .then(() => {
+//       console.log(`Product with ID: ${productId} deleted successfully`);
+//       res.redirect('/admin/products'); // Redirect back to the products list page after deletion
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.redirect('/admin/products'); // Redirect back to the products list page if an error occurs
+//     });
+// };
